@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
 }
 
 android {
@@ -47,4 +48,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 
     implementation 'android.arch.lifecycle:extensions:1.1.1'
+
+    //for working of synthetic layout
+    def fragment_ktx_version = "1.2.5"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
 }
