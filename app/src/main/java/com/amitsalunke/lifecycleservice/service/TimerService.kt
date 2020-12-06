@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat.from
 import androidx.lifecycle.LifecycleService
 import com.amitsalunke.lifecycleservice.MainActivity
 import com.amitsalunke.lifecycleservice.R
+import com.amitsalunke.lifecycleservice.model.SharedTime
 import com.amitsalunke.lifecycleservice.model.TimerEvent
 import com.amitsalunke.lifecycleservice.util.Constants
 import com.amitsalunke.lifecycleservice.model.SharedTimeEvent
@@ -27,11 +28,12 @@ class TimerService : LifecycleService() {
     }*/
 
     private lateinit var notificationManager: NotificationManagerCompat
-
+    private var isServiceStopped = false
     override fun onCreate() {
         super.onCreate()
         Log.e(TAG, " Service on create ")
         notificationManager = from(this)
+        initValues()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -64,7 +66,9 @@ class TimerService : LifecycleService() {
 
 
     private fun stopForegroundService() {
-        SharedTimeEvent.timerEvent.postValue(TimerEvent.END)
+        //SharedTimeEvent.timerEvent.postValue(TimerEvent.END)
+        isServiceStopped = true
+        initValues()
         notificationManager.cancel(Constants.NOTIFICATION_ID)
         stopForeground(true)
         stopSelf()
@@ -100,4 +104,12 @@ class TimerService : LifecycleService() {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
+
+    //dealing with timer
+    private fun initValues() {
+        SharedTimeEvent.timerEvent.value = TimerEvent.END
+        SharedTime.timerInMillis.value = 0L
+    }
+
+
 }
