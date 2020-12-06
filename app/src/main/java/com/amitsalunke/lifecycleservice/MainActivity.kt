@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import com.amitsalunke.lifecycleservice.model.TimerEvent
 import com.amitsalunke.lifecycleservice.service.TimerService
 import com.amitsalunke.lifecycleservice.util.Constants
+import com.amitsalunke.lifecycleservice.model.SharedTimeEvent
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setObservers() {
-        TimerService.timerEvent.observe(this, Observer {
+        SharedTimeEvent.timerEvent.observe(this, Observer {
             when (it) {
                 TimerEvent.START -> {
                     isTimerRunning = true

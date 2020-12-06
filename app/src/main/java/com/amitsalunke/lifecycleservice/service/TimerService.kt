@@ -1,7 +1,6 @@
 package com.amitsalunke.lifecycleservice.service
 
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.content.Intent
@@ -12,20 +11,20 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.from
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.MutableLiveData
 import com.amitsalunke.lifecycleservice.MainActivity
 import com.amitsalunke.lifecycleservice.R
 import com.amitsalunke.lifecycleservice.model.TimerEvent
 import com.amitsalunke.lifecycleservice.util.Constants
+import com.amitsalunke.lifecycleservice.model.SharedTimeEvent
 
 //to work on theory
 class TimerService : LifecycleService() {
     private val TAG: String = "TimerService"
 
     //need to work for more efficent way
-    companion object {
+    /*companion object {
         val timerEvent = MutableLiveData<TimerEvent>()
-    }
+    }*/
 
     private lateinit var notificationManager: NotificationManagerCompat
 
@@ -44,7 +43,7 @@ class TimerService : LifecycleService() {
                 }
                 Constants.ACTION_STOP_SERVICE -> {
                     Log.e(TAG, "Stopped Service")
-                    timerEvent.postValue(TimerEvent.END)
+                    stopForegroundService()
                 }
                 else -> Log.e(TAG, "Not found command");
             }
@@ -53,7 +52,7 @@ class TimerService : LifecycleService() {
     }
 
     private fun startForegroundService() {
-        timerEvent.postValue(TimerEvent.START)
+        SharedTimeEvent.timerEvent.postValue(TimerEvent.START)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel()
@@ -61,6 +60,14 @@ class TimerService : LifecycleService() {
 
         startForeground(Constants.NOTIFICATION_ID, getNotificationBuilder().build())
 
+    }
+
+
+    private fun stopForegroundService() {
+        SharedTimeEvent.timerEvent.postValue(TimerEvent.END)
+        notificationManager.cancel(Constants.NOTIFICATION_ID)
+        stopForeground(true)
+        stopSelf()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
