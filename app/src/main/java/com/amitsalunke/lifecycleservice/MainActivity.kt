@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Observer
+import com.amitsalunke.lifecycleservice.model.SharedTime
 import com.amitsalunke.lifecycleservice.model.TimerEvent
 import com.amitsalunke.lifecycleservice.service.TimerService
 import com.amitsalunke.lifecycleservice.util.Constants
 import com.amitsalunke.lifecycleservice.model.SharedTimeEvent
+import com.amitsalunke.lifecycleservice.util.TimerUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -53,6 +55,10 @@ class MainActivity : AppCompatActivity() {
                     Log.e(TAG, "I got stop from Service")
                 }
             }
+        })
+
+        SharedTime.timerInMillis.observe(this, Observer {
+            tvTimer.text = TimerUtil.getFormattedTime(it, true)
         })
     }
 

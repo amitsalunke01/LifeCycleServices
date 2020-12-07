@@ -52,4 +52,8 @@ dependencies {
     //for working of synthetic layout
     def fragment_ktx_version = "1.2.5"
     implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 }

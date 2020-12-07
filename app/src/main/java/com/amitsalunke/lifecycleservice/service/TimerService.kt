@@ -11,12 +11,18 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.from
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.Observer
 import com.amitsalunke.lifecycleservice.MainActivity
 import com.amitsalunke.lifecycleservice.R
 import com.amitsalunke.lifecycleservice.model.SharedTime
 import com.amitsalunke.lifecycleservice.model.TimerEvent
 import com.amitsalunke.lifecycleservice.util.Constants
 import com.amitsalunke.lifecycleservice.model.SharedTimeEvent
+import com.amitsalunke.lifecycleservice.util.TimerUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 //to work on theory
 class TimerService : LifecycleService() {
@@ -29,6 +35,7 @@ class TimerService : LifecycleService() {
 
     private lateinit var notificationManager: NotificationManagerCompat
     private var isServiceStopped = false
+
     override fun onCreate() {
         super.onCreate()
         Log.e(TAG, " Service on create ")
@@ -55,13 +62,23 @@ class TimerService : LifecycleService() {
 
     private fun startForegroundService() {
         SharedTimeEvent.timerEvent.postValue(TimerEvent.START)
-
+        startTimer()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel()
         }
-
         startForeground(Constants.NOTIFICATION_ID, getNotificationBuilder().build())
+        updateNotificationWithTime()
+    }
 
+    private fun updateNotificationWithTime() {
+        SharedTime.timerInMillis.observe(this, Observer {
+            if (!isServiceStopped) {
+                val notiBuilder = getNotificationBuilder().setContentText(
+                    TimerUtil.getFormattedTime(it, false)
+                )
+                notificationManager.notify(Constants.NOTIFICATION_ID, notiBuilder.build())
+            }
+        })
     }
 
 
@@ -111,5 +128,15 @@ class TimerService : LifecycleService() {
         SharedTime.timerInMillis.value = 0L
     }
 
+    private fun startTimer() {
+        val timeStarted = System.currentTimeMillis()
+        CoroutineScope(Dispatchers.Main).launch {
+            while (!isServiceStopped && SharedTimeEvent.timerEvent.value == TimerEvent.START) {
+                val lapTimer = System.currentTimeMillis() - timeStarted
+                SharedTime.timerInMillis.postValue(lapTimer)
+                delay(50L)
+            }
+        }
+    }
 
 }
