@@ -3,8 +3,10 @@ package com.amitsalunke.lifecycleservice.service
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
 import android.os.Build
+import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -59,6 +61,7 @@ class TimerService : LifecycleService() {
         }
         return super.onStartCommand(intent, flags, startId)
     }
+
 
     private fun startForegroundService() {
         SharedTimeEvent.timerEvent.postValue(TimerEvent.START)
@@ -138,5 +141,6 @@ class TimerService : LifecycleService() {
             }
         }
     }
+
 
 }
